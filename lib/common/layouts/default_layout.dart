@@ -5,17 +5,19 @@ class DefaultLayout extends StatelessWidget {
   final Widget child;
   final bool isBack;
   final String? title;
-  final String? action;
+  final TextButton? actions;
   final Widget? bottomNavigationBar;
+  final FloatingActionButton? floatingActionButton;
 
   DefaultLayout({
     Key? key,
     this.backgroundColor,
     required this.child,
+    this.actions,
     this.isBack = false,
     this.title,
-    this.action,
     this.bottomNavigationBar,
+    this.floatingActionButton,
   }) : super(key: key);
 
   @override
@@ -25,6 +27,7 @@ class DefaultLayout extends StatelessWidget {
       appBar: renderAppBar(),
       body: child,
       bottomNavigationBar: bottomNavigationBar,
+      floatingActionButton: floatingActionButton,
     );
   }
 
@@ -37,7 +40,7 @@ class DefaultLayout extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: false,
-        leading: isBack ?  BackButton() :  SizedBox.shrink(),
+        leading: isBack ? BackButton() : SizedBox.shrink(),
         title: Text(
           title!,
           style: const TextStyle(
@@ -45,11 +48,7 @@ class DefaultLayout extends StatelessWidget {
             fontWeight: FontWeight.w500,
           ),
         ),
-        actions: [
-          Text(
-            action!,
-          )
-        ],
+        actions: [actions!],
         foregroundColor: Colors.black,
       );
     }

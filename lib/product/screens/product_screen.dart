@@ -2,6 +2,7 @@ import 'package:carrot_market/common/layouts/default_layout.dart';
 import 'package:carrot_market/product/screens/upload_product.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../common/const/app_colors.dart';
 
@@ -14,8 +15,28 @@ class ProductScreen extends StatelessWidget {
 
     return SafeArea(
       child: DefaultLayout(
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const UploadProduct(),
+              ),
+            );
+          },
+          backgroundColor: Colors.orange,
+          child: Icon(
+            Icons.add,
+          ),
+        ),
         child: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection('product').snapshots(),
+          stream: FirebaseFirestore.instance
+              .collection('product')
+              .orderBy(
+                'createdTime',
+                descending: true,
+              )
+              .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const CircularProgressIndicator();
@@ -23,14 +44,7 @@ class ProductScreen extends StatelessWidget {
             return ListView.separated(
                 itemBuilder: (BuildContext context, int index) {
                   return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const UploadProduct(),
-                        ),
-                      );
-                    },
+                    onTap: () {},
                     child: Row(
                       children: [
                         Padding(
@@ -44,7 +58,7 @@ class ProductScreen extends StatelessWidget {
                           ),
                         ),
                         Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
@@ -58,8 +72,8 @@ class ProductScreen extends StatelessWidget {
                                     color: AppColors.GRAY,
                                   ),
                                 ),
-                                const Text(
-                                  ' 10분 전',
+                                Text(
+                                  snapshot.data!.docs[index]['createdTime'],
                                   style: TextStyle(
                                     color: AppColors.GRAY,
                                   ),
@@ -69,14 +83,18 @@ class ProductScreen extends StatelessWidget {
                             Text(
                               '${snapshot.data!.docs[index]['price']}원',
                             ),
-                            TextButton.icon(
-                              icon: const Icon(Icons.favorite_border),
-                              onPressed: () {},
-                              label: Text(
-                                snapshot.data!.docs[index]['favorite']
-                                    .toString(),
-                              ),
-                            ),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.chat_bubble_outline,
+                                ),
+                                Text('4'),
+                                Icon(Icons.favorite_border),
+                                Text(
+                                  '${snapshot.data!.docs[index]['favorite']}',
+                                ),
+                              ],
+                            )
                           ],
                         )
                       ],
