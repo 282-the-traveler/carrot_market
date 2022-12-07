@@ -2,17 +2,26 @@ import 'package:carrot_market/common/layouts/default_layout.dart';
 import 'package:carrot_market/product/screens/upload_product.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:jiffy/jiffy.dart';
 
 import '../../common/const/app_colors.dart';
 
-class ProductScreen extends StatelessWidget {
+class ProductScreen extends StatefulWidget {
   const ProductScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    List<dynamic> products = [];
+  State<ProductScreen> createState() => _ProductScreenState();
+}
 
+class _ProductScreenState extends State<ProductScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Jiffy.locale('ko');
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return SafeArea(
       child: DefaultLayout(
         floatingActionButton: FloatingActionButton(
@@ -25,7 +34,7 @@ class ProductScreen extends StatelessWidget {
             );
           },
           backgroundColor: Colors.orange,
-          child: Icon(
+          child: const Icon(
             Icons.add,
           ),
         ),
@@ -39,7 +48,9 @@ class ProductScreen extends StatelessWidget {
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
             }
             return ListView.separated(
                 itemBuilder: (BuildContext context, int index) {
@@ -67,14 +78,17 @@ class ProductScreen extends StatelessWidget {
                             Row(
                               children: [
                                 Text(
-                                  snapshot.data!.docs[index]['place'],
-                                  style: TextStyle(
+                                  snapshot.data!.docs[index]['place'] + '  ',
+                                  style: const TextStyle(
                                     color: AppColors.GRAY,
                                   ),
                                 ),
                                 Text(
-                                  snapshot.data!.docs[index]['createdTime'],
-                                  style: TextStyle(
+                                  Jiffy((snapshot.data!.docs[index]
+                                              ['createdTime'])
+                                          .toDate())
+                                      .fromNow(),
+                                  style: const TextStyle(
                                     color: AppColors.GRAY,
                                   ),
                                 ),
@@ -85,11 +99,11 @@ class ProductScreen extends StatelessWidget {
                             ),
                             Row(
                               children: [
-                                Icon(
+                                const Icon(
                                   Icons.chat_bubble_outline,
                                 ),
-                                Text('4'),
-                                Icon(Icons.favorite_border),
+                                const Text('4'),
+                                const Icon(Icons.favorite_border),
                                 Text(
                                   '${snapshot.data!.docs[index]['favorite']}',
                                 ),
