@@ -56,62 +56,72 @@ class _ProductScreenState extends State<ProductScreen> {
                 itemBuilder: (BuildContext context, int index) {
                   return GestureDetector(
                     onTap: () {},
-                    child: Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(
-                            20.0,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        top: 20.0,
+                        left: 20.0,
+                        right: 20.0,
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: Container(
+                              color: AppColors.GREEN,
+                            ),
                           ),
-                          child: Container(
-                            color: AppColors.GREEN,
-                            width: 120,
-                            height: 120,
-                          ),
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              snapshot.data!.docs[index]['title'],
-                            ),
-                            Row(
-                              children: [
-                                Text(
-                                  snapshot.data!.docs[index]['place'] + '  ',
-                                  style: const TextStyle(
-                                    color: AppColors.GRAY,
+                          Expanded(
+                            flex: 4,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 20.0,),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    snapshot.data!.docs[index]['title'],
                                   ),
-                                ),
-                                Text(
-                                  Jiffy((snapshot.data!.docs[index]
-                                              ['createdTime'])
-                                          .toDate())
-                                      .fromNow(),
-                                  style: const TextStyle(
-                                    color: AppColors.GRAY,
+                                  Row(
+                                    children: [
+                                      Text(
+                                        snapshot.data!.docs[index]['place'] +
+                                            '  ',
+                                        style: const TextStyle(
+                                          color: AppColors.GRAY,
+                                        ),
+                                      ),
+                                      Text(
+                                        Jiffy((snapshot.data!.docs[index]
+                                                    ['createdTime'])
+                                                .toDate())
+                                            .fromNow(),
+                                        style: const TextStyle(
+                                          color: AppColors.GRAY,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ],
+                                  Text(
+                                    '${snapshot.data!.docs[index]['price']}원',
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      const Icon(
+                                        Icons.chat_bubble_outline,
+                                      ),
+                                      const Text('4' + ' '),
+                                      const Icon(Icons.favorite_border),
+                                      Text(
+                                        '${snapshot.data!.docs[index]['favorite']}',
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
                             ),
-                            Text(
-                              '${snapshot.data!.docs[index]['price']}원',
-                            ),
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.chat_bubble_outline,
-                                ),
-                                const Text('4'),
-                                const Icon(Icons.favorite_border),
-                                Text(
-                                  '${snapshot.data!.docs[index]['favorite']}',
-                                ),
-                              ],
-                            )
-                          ],
-                        )
-                      ],
+                          )
+                        ],
+                      ),
                     ),
                   );
                 },

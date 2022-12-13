@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:carrot_market/common/layouts/default_layout.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -23,8 +24,8 @@ class _UploadProductState extends State<UploadProduct> {
   int? price;
   String? description;
   PickedFile? _image;
-  firebase_storage.FirebaseStorage storage = firebase_storage.FirebaseStorage
-      .instance;
+  FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
+  String _fileURL = '';
 
   Future getImageFromCamera() async {
     var image = await ImagePicker.platform.pickImage(
@@ -47,16 +48,26 @@ class _UploadProductState extends State<UploadProduct> {
   Future uploadFile() async {
     if (_image == null) return;
     final fileName = basename(_image!.path);
-    final destination = 'files/$fileName';
-    print (fileName);
+    print('fileName:::::::::::' + fileName);
     try {
-      final ref = firebase_storage.FirebaseStorage.instance
-          .ref(destination);
-      await ref.putFile(File(_image!.path));
+      Reference storageReference =
+          _firebaseStorage.ref().child("files/$fileName");
+
+      // 파일 업로드
+      UploadTask uploadTask = storageReference.putFile(File(_image!.path));
+
+      String imageUrl = await (await uploadTask).ref.getDownloadURL();
+
+      setState(() {
+        _fileURL = imageUrl;
+      });
+
+      print('imageUrl::::::::' + imageUrl.toString());
     } catch (e) {
       print('error occured');
     }
   }
+
   @override
   void dispose() {
     titleController.dispose();
@@ -83,17 +94,14 @@ class _UploadProductState extends State<UploadProduct> {
               'description': description,
               'place': '발산동',
               'favorite': '8',
-              'createdTime' : Timestamp.now()
+              'createdTime': Timestamp.now(),
+              'fileURL': _fileURL,
             });
             uploadFile();
             titleController.clear();
             priceController.clear();
             descriptionController.clear();
-            Navigator.
-            pop
-            (
-            context
-            );
+            Navigator.pop(context);
           });
         },
         child: const Text('완료'),
@@ -153,13 +161,13 @@ class _UploadProductState extends State<UploadProduct> {
                   height: 80,
                   child: _image == null
                       ? Text(
-                    'No image selected.',
-                  )
+                          'No image selected.',
+                        )
                       : Image.file(
-                    File(
-                      _image!.path,
-                    ),
-                  ),
+                          File(
+                            _image!.path,
+                          ),
+                        ),
                 )
               ],
             )
